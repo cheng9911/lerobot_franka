@@ -152,6 +152,7 @@ class LeRobotDataset(torch.utils.data.Dataset):
                 self.tolerance_s,
                 self.video_backend,
             )
+            
 
         if self.image_transforms is not None:
             for cam in self.camera_keys:

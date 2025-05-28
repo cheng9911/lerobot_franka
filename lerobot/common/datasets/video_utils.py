@@ -90,6 +90,8 @@ def decode_video_frames_torchvision(
     and all subsequent frames until reaching the requested frame. The number of key frames in a video
     can be adjusted during encoding to take into account decoding time and video size in bytes.
     """
+
+    
     video_path = str(video_path)
 
     # set backend
@@ -161,7 +163,18 @@ def decode_video_frames_torchvision(
     assert len(timestamps) == len(closest_frames)
     return closest_frames
 
-
+def _is_encoder_supported(encoder: str) -> bool:
+    """Check if ffmpeg supports a given encoder."""
+    try:
+        result = subprocess.run(
+            ["ffmpeg", "-hide_banner", "-encoders"],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.DEVNULL,
+            text=True,
+        )
+        return encoder in result.stdout
+    except Exception:
+        return False
 def encode_video_frames(
     imgs_dir: Path,
     video_path: Path,
@@ -177,6 +190,9 @@ def encode_video_frames(
     """More info on ffmpeg arguments tuning on `benchmark/video/README.md`"""
     video_path = Path(video_path)
     video_path.parent.mkdir(parents=True, exist_ok=True)
+    if not _is_encoder_supported(vcodec):
+        print(f"[Warning] Encoder '{vcodec}' is not supported. Falling back to 'libx264'.")
+        vcodec = "libx264"
 
     ffmpeg_args = OrderedDict(
         [

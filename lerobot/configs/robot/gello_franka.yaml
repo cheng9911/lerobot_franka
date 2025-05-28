@@ -1,0 +1,45 @@
+_target_: lerobot.common.robot_devices.robots.gello_ur5.gello_ur5Robot
+calibration_path: .cache/calibration/gello_franka.pkl
+leader_arms:
+  main:
+    _target_: lerobot.common.robot_devices.motors.dynamixel.DynamixelMotorsBus
+    port: /dev/ttyUSB0 
+    motors:
+      # name: (index, model)
+      joint0: [0, "xl330-m288"]
+      joint1: [1, "xl330-m288"]
+      joint2: [2, "xl330-m288"]
+      joint3: [3, "xl330-m288"]
+      joint4: [4, "xl330-m288"]
+      joint5: [5, "xl330-m288"]
+      joint6: [6, "xl330-m288"]
+      gripper: [7, "xl330-m077"]
+follower_arms: #franka
+  main:
+    _target_: lerobot.common.robot_devices.robots.panda.PandaRobot
+    # port: /dev/ttyUSB0 
+    # motors:
+    #   # name: (index, model)
+    #   shoulder_pan: [1, "xl330-m288"]
+    #   shoulder_lift: [2, "xl330-m288"]
+    #   elbow_flex: [3, "xl330-m288"]
+    #   wrist_1: [4, "xl330-m288"]
+    #   wrist_2: [5, "xl330-m288"]
+    #   wrist_3: [6, "xl330-m288"]
+    #   gripper: [7, "xl330-m077"]
+cameras:
+  head:
+    camera_index: 7
+    fps: 30
+    width: 640
+    height: 480
+  flan:
+    camera_index: 4
+    fps: 30
+    width: 640
+    height: 480
+  right:
+    camera_index: 6
+    fps: 30
+    width: 640
+    height: 480

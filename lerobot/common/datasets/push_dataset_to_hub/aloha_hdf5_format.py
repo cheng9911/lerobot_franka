@@ -169,6 +169,56 @@ def load_from_raw(
     data_dict["index"] = torch.arange(0, total_frames, 1)
     return data_dict
 
+# def to_hf_dataset(data_dict, video) -> Dataset:
+#     features = {}
+
+#     # 构建图像相关的 features（Image 或 Video）
+#     keys = [key for key in data_dict if "observation.images." in key]
+#     for key in keys:
+#         features[key] = VideoFrame() if video else Image()
+
+#     # 构建 observation 和 action 序列字段
+#     features["observation.state"] = Sequence(
+#         length=data_dict["observation.state"].shape[1],
+#         feature=Value(dtype="float32")
+#     )
+#     if "observation.velocity" in data_dict:
+#         features["observation.velocity"] = Sequence(
+#             length=data_dict["observation.velocity"].shape[1],
+#             feature=Value(dtype="float32")
+#         )
+#     if "observation.effort" in data_dict:
+#         features["observation.effort"] = Sequence(
+#             length=data_dict["observation.effort"].shape[1],
+#             feature=Value(dtype="float32")
+#         )
+#     features["action"] = Sequence(
+#         length=data_dict["action"].shape[1],
+#         feature=Value(dtype="float32")
+#     )
+
+#     # 构建标量字段
+#     features["episode_index"] = Value(dtype="int64")
+#     features["frame_index"] = Value(dtype="int64")
+#     features["timestamp"] = Value(dtype="float32")
+#     features["next.done"] = Value(dtype="bool")
+#     features["index"] = Value(dtype="int64")
+
+#     # 打印调试信息
+#     for k, v in data_dict.items():
+#         print(f"{k}: type={type(v)}, shape={getattr(v, 'shape', None)}")
+
+#     # ⚠️ 关键转换部分
+#     for key, value in data_dict.items():
+#         if isinstance(value, torch.Tensor):
+#             # Convert shape [N, 1] → [N]
+#             if value.ndim == 2 and value.shape[1] == 1:
+#                 value = value.squeeze(-1)
+#             data_dict[key] = value.tolist()
+#         # 构建 HuggingFace Dataset
+#     hf_dataset = Dataset.from_dict(data_dict, features=Features(features))
+#     hf_dataset.set_transform(hf_transform_to_torch)
+#     return hf_dataset
 
 def to_hf_dataset(data_dict, video) -> Dataset:
     features = {}
@@ -177,28 +227,61 @@ def to_hf_dataset(data_dict, video) -> Dataset:
     for key in keys:
         if video:
             features[key] = VideoFrame()
+            # features[key]= Video(decode=False)
         else:
             features[key] = Image()
-
     features["observation.state"] = Sequence(
-        length=data_dict["observation.state"].shape[1], feature=Value(dtype="float32", id=None)
-    )
+    feature=Value(dtype="float32")
+)
+
+    # features["observation.state"] = Sequence(
+    #     length=data_dict["observation.state"].shape[1], feature=Value(dtype="float32", id=None)
+    # )
     if "observation.velocity" in data_dict:
         features["observation.velocity"] = Sequence(
-            length=data_dict["observation.velocity"].shape[1], feature=Value(dtype="float32", id=None)
+            feature=Value(dtype="float32", id=None)
         )
     if "observation.effort" in data_dict:
         features["observation.effort"] = Sequence(
-            length=data_dict["observation.effort"].shape[1], feature=Value(dtype="float32", id=None)
+            feature=Value(dtype="float32", id=None)
         )
     features["action"] = Sequence(
-        length=data_dict["action"].shape[1], feature=Value(dtype="float32", id=None)
+        feature=Value(dtype="float32", id=None)
     )
+    # if "observation.velocity" in data_dict:
+    #     features["observation.velocity"] = Sequence(
+    #         length=data_dict["observation.velocity"].shape[1], feature=Value(dtype="float32", id=None)
+    #     )
+    # if "observation.effort" in data_dict:
+    #     features["observation.effort"] = Sequence(
+    #         length=data_dict["observation.effort"].shape[1], feature=Value(dtype="float32", id=None)
+    #     )
+    # features["action"] = Sequence(
+    #     length=data_dict["action"].shape[1], feature=Value(dtype="float32", id=None)
+    # )
     features["episode_index"] = Value(dtype="int64", id=None)
     features["frame_index"] = Value(dtype="int64", id=None)
     features["timestamp"] = Value(dtype="float32", id=None)
     features["next.done"] = Value(dtype="bool", id=None)
     features["index"] = Value(dtype="int64", id=None)
+    for key in data_dict:
+        value = data_dict[key]
+        if isinstance(value, torch.Tensor):
+            if value.ndim == 0:
+                data_dict[key] = value.item()
+            else:
+                data_dict[key] = value.tolist()
+    for key, value in data_dict.items():
+        if isinstance(value, list) and len(value) > 0:
+            # 如果第一个元素本身是 list（而不是 float/int/bool）
+            if isinstance(value[0], list) and len(value[0]) == 1:
+                data_dict[key] = [v[0] for v in value]
+    for k, v in data_dict.items():
+        print(f"{k}: type={type(v)}, shape={getattr(v, 'shape', None)}")
+    # for key in data_dict:
+    #     value = data_dict[key]
+    #     if isinstance(value, torch.Tensor):
+    #         data_dict[key] = value.tolist()  # Convert to native Python types
 
     hf_dataset = Dataset.from_dict(data_dict, features=Features(features))
     hf_dataset.set_transform(hf_transform_to_torch)

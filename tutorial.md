@@ -73,3 +73,9 @@ python lerobot/scripts/control_robot.py eval \
   --robot-path lerobot/configs/robot/gello_ur5.yaml \
   -p outputs/train/act_ur5_dish/checkpoints/last/pretrained_model
 ```
+
+
+
+```
+python lerobot/common/robot_devices/cameras/opencv.py  --camera-config  lerobot/configs/robot/camera.yaml 
+```

@@ -128,6 +128,9 @@ def save_images_from_cameras(
             print(f"Frame: {frame_index:04d}\tLatency (ms): {(time.perf_counter() - now) * 1000:.2f}")
 
             frame_index += 1
+        for camera in cameras:
+            if camera.is_connected:
+                camera.disconnect()
 
     print(f"Images have been saved to {images_dir}")
 
@@ -329,6 +332,7 @@ class OpenCVCamera:
         return color_image
 
     def read_loop(self):
+        print(f"[INFO] Camera {self.camera_index} read_loop started.")
         while self.stop_event is None or not self.stop_event.is_set():
             self.color_image = self.read()
 
@@ -421,3 +425,96 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
     save_images_from_cameras(**vars(args))
+
+#     import yaml
+#     parser = argparse.ArgumentParser(
+#         description="Save frames using `OpenCVCamera` based on a camera configuration YAML file."
+#     )
+#     parser.add_argument(
+#         "--camera-config",
+#         type=Path,
+#         required=True,
+#         help="Path to a YAML file containing camera configuration for one or more cameras.",
+#     )
+#     parser.add_argument(
+#         "--images-dir",
+#         type=Path,
+#         default="outputs/images_from_opencv_cameras",
+#         help="Directory to save frames for each camera.",
+#     )
+#     parser.add_argument(
+#         "--record-time-s",
+#         type=float,
+#         default=2.0,
+#         help="Number of seconds to record frames. Default is 2.",
+#     )
+#     args = parser.parse_args()
+
+#     # 读取摄像头配置
+#     with open(args.camera_config, "r") as f:
+#         config_data = yaml.safe_load(f)
+
+#     camera_configs = {}
+#     for name, cam_conf in config_data.get("cameras", {}).items():
+#         cam_index = cam_conf["camera_index"]
+#         fps = cam_conf.get("fps")
+#         width = cam_conf.get("width")
+#         height = cam_conf.get("height")
+#         camera_configs[name] = OpenCVCamera(cam_index, fps=fps, width=width, height=height)
+#         camera_configs[name].connect()
+#         print(f"Connected to camera {cam_index}")
+    
+    
+    
+    
+#     # 运行图像保存逻辑
+#     # save_images_from_cameras(
+#     #     images_dir=args.images_dir,
+#     #     camera_ids=[c.camera_index for c in camera_configs.values()],
+#     #     fps=None,  # use per-camera fps already set
+#     #     width=None,
+#     #     height=None,
+#     #     record_time_s=args.record_time_s,
+#     # )
+# # python lerobot/common/robot_devices/cameras/opencv.py  --camera-config  lerobot/configs/robot/camera.yaml 
+#     cameras = camera_configs.copy()
+#     # for name in cameras:
+#     #         cameras[name].connect()
+#     images = {}
+#     # 丢弃前30帧以确保相机稳定
+#     for _ in range(30):
+#         for camera in camera_configs.values():
+#             camera.read()
+#         time.sleep(0.05)  # 适当 sleep
+
+#     for name, camera in cameras.items():
+#         before_camread_t = time.perf_counter()
+
+#         images[name] = camera.read()
+
+#     time.sleep(1 )
+
+    
+
+#     # for name, image in images.items():
+#     #     print(f"{name} image dtype: {image.dtype}, shape: {image.shape}")
+#     #     if image is None:
+#     #         raise RuntimeError(f"{name} camera timed out")
+        
+#     #     if image is not None:
+#     #         cv2.imshow(f"Camera: {name}", image)
+#     # 假设 images 是个字典，结构为 {camera_name: image}
+#     first_name, first_image = next(iter(images.items()))
+
+#     if first_image is None:
+#         raise RuntimeError(f"First camera '{first_name}' returned no image!")
+#     print(f"{name} image dtype: {first_image.dtype}, shape: {first_image.shape}")
+#     print(f"Displaying image from camera: {first_name}")
+#     print("About to show image...")
+   
+#     cv2.imwrite("debug_output.png", first_image)
+#     print("Image saved as debug_output.png")
+
+#     # 断开连接（展示之后）
+#     for name in cameras:
+#         cameras[name].disconnect()
