@@ -25,10 +25,10 @@ override_dataset_stats:
     # stats from imagenet, since we use a pretrained vision model
     mean: [[[0.485]], [[0.456]], [[0.406]]]  # (c,1,1)
     std: [[[0.229]], [[0.224]], [[0.225]]]  # (c,1,1)
-  # observation.images.right:
+  observation.images.right:
   #   # stats from imagenet, since we use a pretrained vision model
-  #   mean: [[[0.485]], [[0.456]], [[0.406]]]  # (c,1,1)
-  #   std: [[[0.229]], [[0.224]], [[0.225]]]  # (c,1,1)
+    mean: [[[0.485]], [[0.456]], [[0.406]]]  # (c,1,1)
+    std: [[[0.229]], [[0.224]], [[0.225]]]  # (c,1,1)
 
 training:
   offline_steps: 160000
@@ -65,7 +65,7 @@ policy:
     # TODO(rcadene, alexander-soare): add variables for height and width from the dataset/env?
     observation.images.head: [3, 480, 640]
     observation.images.flan: [3, 480, 640]
-    # observation.images.right: [3, 480, 640]
+    observation.images.right: [3, 480, 640]
     observation.state: ["${env.state_dim}"]
   output_shapes:
     action: ["${env.action_dim}"]
@@ -74,7 +74,7 @@ policy:
   input_normalization_modes:
     observation.images.head: mean_std
     observation.images.flan: mean_std
-    # observation.images.right: mean_std
+    observation.images.right: mean_std
     observation.state: mean_std
   output_normalization_modes:
     action: mean_std

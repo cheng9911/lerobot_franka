@@ -8,13 +8,13 @@ cameras:
     height: 480
   flan:
     
+    camera_index: 16
+    fps: 30
+    width: 640
+    height: 480
+  right:
+    
     camera_index: 4
     fps: 30
     width: 640
     height: 480
-  # right:
-    
-  #   camera_index: 6
-  #   fps: 30
-  #   width: 640
-  #   height: 480

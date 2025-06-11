@@ -151,3 +151,5 @@ dmypy.json
 cython_debug/
 tests/
 third_party/
+lerobot/resnet/blip2_skill_multitask.pt
+lerobot/resnet/clip_skill_model.pt

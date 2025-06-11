@@ -351,6 +351,14 @@ def run_record(args,policy: torch.nn.Module | None = None,hydra_cfg: DictConfig 
 
                         # Move to cpu, if not already the case
                         action = action.to("cpu")
+                    MAX_OPEN=0.9
+                    grip_width = MAX_OPEN * (1 - action[-1])
+                    if  grip_width>0.7:
+                        grip_width = grip_width+0.2
+                    grip_width = max(0.0, min(MAX_OPEN, grip_width))
+                    action = action.clone()
+                    action[-1] = grip_width
+
                     obs = env.step(action)
                     action = {"action": action}
 
@@ -912,13 +920,13 @@ if __name__ == "__main__":
         "--fps", type=none_or_int, default=None, help="Frames per second (set to None to disable)"
     )
     parser_record.add_argument("--root", type=str, default="data")
-    parser_record.add_argument("--repo-id", type=str, default="SunJincheng/gello_model")
+    parser_record.add_argument("--repo-id", type=str, default="SunJincheng/panda")
     
     # parser_record.add_argument("--num-episodes", type=int, default=50)
     parser_record.add_argument("--warmup-time-s", type=int, default=10)
     parser_record.add_argument("--episode-time-s", type=int, default=60)
     parser_record.add_argument("--reset-time-s", type=int, default=10)
-    parser_record.add_argument("--num-episodes", type=int, default=50, help="Number of episodes to record.")
+    parser_record.add_argument("--num-episodes", type=int, default=30, help="Number of episodes to record.")
     parser_record.add_argument(
     "--hz",
     type=float,

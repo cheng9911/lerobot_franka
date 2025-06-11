@@ -19,7 +19,7 @@ api = HfApi(token=os.getenv("HF_TOKEN"))
 
 # 上传数据集
 api.upload_folder(
-    folder_path="/home/rocos/Documents/GitHub/lerobot_franka/data/SunJincheng/gello",
-    repo_id="SunJincheng/gello",
+    folder_path="/home/rocos/Documents/GitHub/lerobot_franka/data/SunJincheng/panda",
+    repo_id="SunJincheng/panda",
     repo_type="dataset",
 )
