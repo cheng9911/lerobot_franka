@@ -19,7 +19,7 @@ class PandaRobot(Robot):
             ip_address=robot_ip,
         )
         self.gripper = GripperInterface(
-            ip_address="192.168.1.108",
+            ip_address="192.168.1.106",
         )
         self.robot.go_home()
         self.robot.start_joint_impedance()

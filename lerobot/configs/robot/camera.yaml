@@ -2,13 +2,13 @@
 cameras:
   head:
     
-    camera_index: 10
+    camera_index: 16
     fps: 30
     width: 640
     height: 480
   flan:
     
-    camera_index: 16
+    camera_index: 8
     fps: 30
     width: 640
     height: 480
